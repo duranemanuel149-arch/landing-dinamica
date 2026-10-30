@@ -1,0 +1,2066 @@
+/* =========================================================
+   NARUTO // SHINOBI INTELLIGENCE
+   VISUAL SYSTEM V5
+   ========================================================= */
+
+:root {
+  --black: #030405;
+  --black-2: #07090b;
+  --black-3: #0b0e11;
+
+  --panel: rgba(10, 13, 16, 0.82);
+  --panel-solid: #0b0e11;
+
+  --white: #f5f4ef;
+  --white-soft: #c9c8c2;
+  --muted: #85898c;
+  --dim: #454a4e;
+
+  --red: #d71927;
+  --red-bright: #f12735;
+  --red-dark: #6e0b13;
+
+  --orange: #ed6c16;
+  --orange-bright: #ff9635;
+  --orange-dark: #71310d;
+
+  --green: #75ffb2;
+
+  --line: rgba(255, 255, 255, 0.065);
+  --line-light: rgba(255, 255, 255, 0.12);
+  --line-red: rgba(215, 25, 39, 0.38);
+  --line-orange: rgba(237, 108, 22, 0.34);
+
+  --font-sans:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+  --font-display: "Orbitron", sans-serif;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --fast: 0.18s var(--ease);
+  --normal: 0.35s var(--ease);
+  --slow: 0.65s var(--ease);
+
+  --container: 1440px;
+  --nav-height: 72px;
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-sans);
+}
+
+body.site-body {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% -15%,
+      rgba(215, 25, 39, 0.07),
+      transparent 28%
+    ),
+    var(--black);
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+}
+
+/* =========================================================
+   GLOBAL ATMOSPHERE
+   ========================================================= */
+
+body.site-body::before {
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    );
+
+  background-size: 80px 80px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    rgba(0, 0, 0, 0.35) 45%,
+    transparent 100%
+  );
+
+  pointer-events: none;
+  z-index: -5;
+}
+
+body.site-body::after {
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.008) 50%,
+    transparent 100%
+  );
+
+  pointer-events: none;
+  z-index: -4;
+}
+
+/* =========================================================
+   NOISE
+   ========================================================= */
+
+.site-noise {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
+
+  opacity: 0.28;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* =========================================================
+   SCANLINES
+   ========================================================= */
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.008) 0,
+    rgba(255, 255, 0, 0.008) 1px,
+    transparent 1px,
+    transparent 6px
+  );
+
+  pointer-events: none;
+  z-index: 9997;
+
+  opacity: 0.12;
+}
+
+/* =========================================================
+   CURSOR
+   ========================================================= */
+
+.cursor-glow {
+  position: fixed;
+
+  width: 380px;
+  height: 380px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(215, 25, 39, 0.08),
+    transparent 68%
+  );
+
+  pointer-events: none;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 997;
+
+  mix-blend-mode: screen;
+
+  transition:
+    width 0.35s var(--ease),
+    height 0.35s var(--ease),
+    opacity 0.3s ease;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+header {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: var(--nav-height);
+
+  z-index: 1000;
+
+  background: rgba(3, 4, 5, 0.9);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border-bottom: 1px solid var(--line);
+}
+
+header::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: -1px;
+
+  width: 140px;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    var(--red),
+    transparent
+  );
+
+  box-shadow: 0 0 8px rgba(215, 25, 39, 0.45);
+}
+
+.navbar {
+  width: min(
+    calc(100% - 4rem),
+    var(--container)
+  );
+
+  height: 100%;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.logo {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.45rem;
+
+  font-family: var(--font-display);
+
+  font-size: 0.88rem;
+  font-weight: 900;
+
+  letter-spacing: 2.5px;
+
+  text-decoration: none;
+
+  color: var(--white);
+}
+
+.logo::before {
+  content: "◈";
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 23px;
+  height: 23px;
+
+  color: var(--red);
+
+  font-size: 0.7rem;
+
+  border: 1px solid var(--line-red);
+
+  transform: rotate(45deg);
+}
+
+.logo span {
+  color: var(--red);
+
+  text-shadow:
+    0 0 10px rgba(215, 25, 39, 0.35);
+}
+
+/* =========================================================
+   NAV LINKS
+   ========================================================= */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+
+  gap: 2rem;
+}
+
+.nav-link {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.5rem;
+
+  padding: 0.5rem 0;
+
+  color: var(--muted);
+
+  font-size: 0.65rem;
+  font-weight: 600;
+
+  letter-spacing: 1.5px;
+
+  text-decoration: none;
+
+  transition: var(--fast);
+}
+
+.nav-link span {
+  color: var(--dim);
+
+  font-family: var(--font-display);
+
+  font-size: 0.48rem;
+
+  transition: var(--fast);
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--white);
+}
+
+.nav-link:hover span,
+.nav-link.active span {
+  color: var(--red);
+}
+
+.nav-link::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 0;
+  height: 1px;
+
+  background: var(--red);
+
+  transition:
+    width 0.3s var(--ease);
+}
+
+.nav-link:hover::before,
+.nav-link.active::before {
+  width: 100%;
+}
+
+.nav-link.active::after {
+  content: "";
+
+  position: absolute;
+
+  right: -7px;
+  top: 50%;
+
+  width: 3px;
+  height: 3px;
+
+  background: var(--red);
+
+  box-shadow: 0 0 5px var(--red);
+
+  transform: translateY(-50%);
+}
+
+/* =========================================================
+   NAV CTA
+   ========================================================= */
+
+.nav-cta {
+  position: relative;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.6rem 0.95rem;
+
+  color: var(--white);
+
+  background: rgba(255, 255, 255, 0.018);
+
+  border: 1px solid var(--line-light);
+
+  font-family: var(--font-display);
+
+  font-size: 0.52rem;
+  font-weight: 700;
+
+  letter-spacing: 1.2px;
+
+  text-decoration: none;
+
+  overflow: hidden;
+
+  transition: var(--normal);
+}
+
+.nav-cta:hover {
+  border-color: var(--line-red);
+
+  background: rgba(215, 25, 39, 0.045);
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+
+.mobile-menu-button {
+  display: none;
+
+  width: 40px;
+  height: 40px;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+  background: rgba(255, 255, 255, 0.018);
+
+  border: 1px solid var(--line);
+
+  cursor: pointer;
+}
+
+.mobile-menu-button span {
+  width: 18px;
+  height: 1px;
+
+  background: var(--white);
+
+  transition: var(--fast);
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero-section {
+  position: relative;
+
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+
+  padding:
+    calc(var(--nav-height) + 3rem)
+    2rem
+    4rem;
+
+  overflow: hidden;
+
+  isolation: isolate;
+}
+
+/* =========================================================
+   HERO BACKGROUND
+   ========================================================= */
+
+.hero-background {
+  position: absolute;
+  inset: 0;
+
+  background-image: url("hero-bg.jpg");
+
+  background-size: cover;
+  background-position: center;
+
+  transform: scale(1.025);
+
+  filter:
+    saturate(0.92)
+    brightness(0.86)
+    contrast(1.02);
+
+  z-index: -5;
+}
+
+.hero-background::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    90deg,
+    rgba(3, 4, 5, 0.74) 0%,
+    rgba(3, 4, 5, 0.38) 38%,
+    rgba(3, 4, 5, 0.14) 68%,
+    rgba(3, 4, 5, 0.48) 100%
+  );
+}
+
+.hero-background::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: radial-gradient(
+    circle at 65% 50%,
+    transparent 0%,
+    rgba(3, 4, 5, 0.05) 45%,
+    rgba(3, 4, 5, 0.48) 100%
+  );
+}
+
+/* =========================================================
+   HERO HUD
+   ========================================================= */
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  background: linear-gradient(
+    90deg,
+    transparent 0 48%,
+    rgba(255, 255, 255, 0.015) 48.1%,
+    transparent 48.2%
+  );
+
+  opacity: 0.5;
+}
+
+.hero-section::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 90px 4% 4%;
+
+  z-index: -1;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0,
+      rgba(255, 255, 255, 0.045) 1px,
+      transparent 1px
+    )
+    0 0 / 25% 100%,
+    linear-gradient(
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    )
+    0 0 / 100% 120px;
+
+  opacity: 0.22;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 25%,
+    black 75%,
+    transparent
+  );
+}
+
+/* =========================================================
+   HERO RADAR
+   ========================================================= */
+
+.hero-section::after {
+  content: "";
+
+  position: absolute;
+
+  width: min(650px, 72vw);
+  height: min(650px, 72vw);
+
+  top: 50%;
+  left: 68%;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  z-index: -2;
+
+  pointer-events: none;
+
+  opacity: 0.22;
+
+  background: radial-gradient(
+    circle,
+    transparent 0 29%,
+    rgba(227, 38, 46, 0.12) 29.2% 29.4%,
+    transparent 29.6% 46%,
+    rgba(227, 38, 46, 0.065) 46.2% 46.35%,
+    transparent 46.55% 64%,
+    rgba(255, 255, 255, 0.035) 64.2% 64.3%,
+    transparent 64.5%
+  );
+
+  border: 1px solid rgba(227, 38, 46, 0.05);
+
+  animation:
+    radarRotate 45s linear infinite;
+}
+
+/* =========================================================
+   HERO GRAIN
+   ========================================================= */
+
+.hero-grain {
+  position: absolute;
+
+  top: 50%;
+  right: 5%;
+
+  width: 360px;
+  height: 360px;
+
+  border: 1px solid rgba(215, 25, 39, 0.08);
+
+  border-radius: 50%;
+
+  transform: translateY(-50%);
+
+  box-shadow:
+    0 0 0 35px rgba(215, 25, 39, 0.008),
+    0 0 70px rgba(215, 25, 39, 0.025);
+
+  pointer-events: none;
+
+  z-index: -1;
+}
+
+.hero-grain::before,
+.hero-grain::after {
+  content: "";
+
+  position: absolute;
+
+  width: 2px;
+  height: 2px;
+
+  border-radius: 50%;
+
+  background: var(--red);
+
+  box-shadow:
+    120px 80px 0 rgba(227, 38, 46, 0.3),
+    -180px 150px 0 rgba(227, 38, 46, 0.2),
+    260px -120px 0 rgba(227, 38, 46, 0.15),
+    -300px -90px 0 rgba(255, 255, 255, 0.1);
+
+  opacity: 0.35;
+
+  animation:
+    particlesFloat 10s ease-in-out infinite alternate;
+
+  pointer-events: none;
+}
+
+.hero-grain::after {
+  animation-delay: -5s;
+  transform: scale(0.6);
+}
+
+/* =========================================================
+   HERO CONTENT
+   ========================================================= */
+
+.hero-content {
+  position: relative;
+
+  width: min(100%, var(--container));
+
+  margin: 0 auto;
+
+  z-index: 2;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  text-align: left;
+
+  gap: 1.25rem;
+
+  padding-left: 5vw;
+}
+
+.hero-content::before {
+  content: "KONOHA // SHINOBI ARCHIVE";
+
+  position: absolute;
+
+  left: -160px;
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    rotate(-90deg);
+
+  font-family: var(--font-display);
+
+  font-size: 0.45rem;
+
+  letter-spacing: 3px;
+
+  color: rgba(255, 255, 255, 0.18);
+
+  white-space: nowrap;
+}
+
+.hero-content::after {
+  content: "CLASSIFIED // 0026";
+
+  position: absolute;
+
+  right: -135px;
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    rotate(90deg);
+
+  font-family: var(--font-display);
+
+  font-size: 0.45rem;
+
+  letter-spacing: 3px;
+
+  color: rgba(227, 38, 46, 0.38);
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   BADGE
+   ========================================================= */
+
+.hero-badge {
+  position: relative;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 0.7rem;
+
+  padding: 0.42rem 0.75rem;
+
+  background: rgba(0, 0, 0, 0.28);
+
+  border: 1px solid var(--line);
+
+  color: var(--muted);
+
+  backdrop-filter: blur(8px);
+
+  font-family: var(--font-display);
+
+  font-size: 0.5rem;
+
+  letter-spacing: 1.8px;
+}
+
+.hero-badge::before,
+.hero-badge::after {
+  content: "";
+
+  position: absolute;
+
+  width: 6px;
+  height: 6px;
+
+  border-color: var(--red);
+
+  opacity: 0.65;
+}
+
+.hero-badge::before {
+  left: -1px;
+  top: -1px;
+
+  border-left: 1px solid;
+  border-top: 1px solid;
+}
+
+.hero-badge::after {
+  right: -1px;
+  bottom: -1px;
+
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.pulse-dot {
+  width: 5px;
+  height: 5px;
+
+  flex: 0 0 5px;
+
+  background: var(--red);
+
+  border-radius: 50%;
+
+  box-shadow: 0 0 7px var(--red);
+
+  animation: pulse 2.5s infinite;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+
+  font-size: 0.55rem;
+
+  font-weight: 600;
+
+  letter-spacing: 3px;
+
+  color: var(--muted);
+
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   HERO TITLE
+   ========================================================= */
+
+.hero-content h1 {
+  position: relative;
+
+  z-index: 3;
+
+  font-family: var(--font-display);
+
+  font-size: clamp(4rem, 9vw, 9.5rem);
+
+  font-weight: 900;
+
+  line-height: 0.84;
+
+  letter-spacing: -7px;
+
+  color: var(--white);
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.8),
+    0 0 50px rgba(0, 0, 0, 0.45);
+}
+
+.hero-content h1::before {
+  content: "忍";
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform:
+    translate(-50%, -50%)
+    rotate(-8deg);
+
+  z-index: -1;
+
+  font-family: serif;
+
+  font-size: 17rem;
+
+  font-weight: 900;
+
+  color: rgba(227, 38, 46, 0.022);
+
+  pointer-events: none;
+}
+
+.hero-content h1::after {
+  content: "FILE // 001";
+
+  position: absolute;
+
+  left: 7px;
+  bottom: -32px;
+
+  font-family: var(--font-display);
+
+  font-size: 0.48rem;
+
+  font-weight: 500;
+
+  letter-spacing: 3px;
+
+  color: var(--dim);
+
+  text-shadow: none;
+}
+
+.glitch-text {
+  position: relative;
+
+  color: var(--red);
+
+  text-shadow:
+    0 0 16px rgba(215, 25, 39, 0.28);
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  opacity: 0;
+}
+
+.glitch-text::before {
+  color: #00ffff;
+
+  transform: translate(2px, 0);
+}
+
+.glitch-text::after {
+  color: #ff003c;
+
+  transform: translate(-2px, 0);
+}
+
+.hero-section:hover .glitch-text::before {
+  animation: glitchA 0.5s steps(2) infinite;
+  opacity: 0.12;
+}
+
+.hero-section:hover .glitch-text::after {
+  animation: glitchB 0.5s steps(2) infinite;
+  opacity: 0.12;
+}
+
+/* =========================================================
+   HERO LEAD
+   ========================================================= */
+
+.hero-lead {
+  max-width: 610px;
+
+  color: rgba(255, 255, 255, 0.62);
+
+  font-size: 0.92rem;
+
+  line-height: 1.75;
+
+  border-left: 1px solid var(--red);
+
+  padding-left: 1rem;
+}
+
+/* =========================================================
+   HERO BUTTONS
+   ========================================================= */
+
+.hero-actions {
+  display: flex;
+
+  gap: 0.65rem;
+
+  margin-top: 0.8rem;
+}
+
+.hero-button {
+  position: relative;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.65rem;
+
+  min-width: 165px;
+
+  padding: 0.9rem 1.3rem;
+
+  font-family: var(--font-display);
+
+  font-size: 0.56rem;
+
+  font-weight: 700;
+
+  letter-spacing: 1.3px;
+
+  text-decoration: none;
+
+  overflow: hidden;
+
+  transition: var(--normal);
+
+  clip-path: polygon(
+    0 0,
+    calc(100% - 9px) 0,
+    100% 9px,
+    100% 100%,
+    9px 100%,
+    0 calc(100% - 9px)
+  );
+}
+
+.hero-button-primary {
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--red),
+      var(--red-dark)
+    );
+
+  border: 1px solid var(--red);
+
+  box-shadow:
+    0 10px 25px rgba(215, 25, 39, 0.12);
+}
+
+.hero-button-primary:hover {
+  background:
+    linear-gradient(
+      135deg,
+      var(--red-bright),
+      var(--red)
+    );
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 14px 30px rgba(215, 25, 39, 0.2);
+}
+
+.hero-button-ghost {
+  color: var(--white);
+
+  background: rgba(255, 255, 255, 0.02);
+
+  border: 1px solid var(--line-light);
+}
+
+.hero-button-ghost:hover {
+  border-color: var(--line-red);
+
+  background: rgba(215, 25, 39, 0.045);
+
+  transform: translateY(-3px);
+}
+
+.btn-icon {
+  transition:
+    transform 0.3s var(--ease);
+}
+
+.hero-button:hover .btn-icon {
+  transform: translateX(3px);
+}
+
+/* =========================================================
+   HERO META
+   ========================================================= */
+
+.hero-meta {
+  position: relative;
+
+  display: flex;
+
+  gap: 0;
+
+  margin-top: 2.4rem;
+
+  border-top: 1px solid var(--line);
+
+  border-bottom: 1px solid var(--line);
+
+  min-width: 570px;
+
+  padding-bottom: 1.3rem;
+}
+
+.hero-meta::before {
+  content: "SYSTEM STATUS // ONLINE";
+
+  position: absolute;
+
+  left: 0;
+  top: -1.8rem;
+
+  font-family: var(--font-display);
+
+  font-size: 0.4rem;
+
+  letter-spacing: 1.8px;
+
+  color: rgba(227, 38, 46, 0.5);
+}
+
+.meta-item {
+  position: relative;
+
+  min-width: 150px;
+
+  padding: 0.9rem 1.3rem;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.3rem;
+
+  border-right: 1px solid var(--line);
+}
+
+.meta-item:first-child {
+  padding-left: 0;
+}
+
+.meta-item:last-child {
+  border-right: none;
+}
+
+.meta-label {
+  font-size: 0.48rem;
+
+  color: var(--dim);
+
+  font-family: var(--font-display);
+
+  letter-spacing: 1.4px;
+}
+
+.meta-value {
+  font-family: var(--font-display);
+
+  font-size: 0.62rem;
+
+  font-weight: 700;
+
+  color: var(--white);
+
+  letter-spacing: 0.6px;
+}
+
+/* =========================================================
+   HERO SCROLL
+   ========================================================= */
+
+.hero-scroll {
+  position: absolute;
+
+  right: 2rem;
+  bottom: 3rem;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.7rem;
+
+  color: var(--dim);
+
+  font-family: var(--font-display);
+
+  font-size: 0.45rem;
+
+  letter-spacing: 2.5px;
+
+  writing-mode: vertical-rl;
+}
+
+.hero-scroll::before {
+  content: "SCROLL / 01";
+
+  position: absolute;
+
+  right: 0;
+
+  bottom: 4.5rem;
+
+  font-family: var(--font-display);
+
+  font-size: 0.4rem;
+
+  letter-spacing: 1.5px;
+
+  color: rgba(255, 255, 255, 0.18);
+}
+
+.scroll-line {
+  width: 1px;
+  height: 60px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      var(--red),
+      transparent
+    );
+
+  animation:
+    scrollLine 2.5s infinite;
+}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+section {
+  position: relative;
+
+  width: min(
+    calc(100% - 4rem),
+    var(--container)
+  );
+
+  margin: 0 auto;
+
+  padding: 8rem 0;
+}
+
+/* =========================================================
+   SECTION INTRO
+   ========================================================= */
+
+.section-intro {
+  position: relative;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-end;
+
+  gap: 4rem;
+
+  margin-bottom: 2.5rem;
+
+  padding-bottom: 1.4rem;
+
+  border-bottom: 1px solid var(--line);
+}
+
+.section-intro::before {
+  content: "";
+
+  position: absolute;
+
+  bottom: -1px;
+  left: 0;
+
+  width: 140px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--red),
+      transparent
+    );
+}
+
+.intro-heading {
+  position: relative;
+}
+
+.intro-heading::before {
+  content: "ARCHIVE";
+
+  position: absolute;
+
+  left: 0;
+  top: -18px;
+
+  color: var(--dim);
+
+  font-family: var(--font-display);
+
+  font-size: 0.4rem;
+
+  letter-spacing: 3.5px;
+}
+
+.intro-heading h2 {
+  font-family: var(--font-display);
+
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+
+  font-weight: 900;
+
+  line-height: 0.9;
+
+  letter-spacing: -3px;
+
+  text-transform: uppercase;
+}
+
+.section-copy {
+  max-width: 520px;
+
+  color: var(--muted);
+
+  font-size: 0.8rem;
+
+  line-height: 1.75;
+
+  border-left: 1px solid var(--line);
+
+  padding-left: 1.1rem;
+}
+
+/* =========================================================
+   CLANS
+   ========================================================= */
+
+.clan-uchiha::before {
+  content: "UCHIHA";
+
+  position: absolute;
+
+  right: -1rem;
+  top: 5rem;
+
+  font-family: var(--font-display);
+
+  font-size: clamp(5rem, 16vw, 13rem);
+
+  font-weight: 900;
+
+  color: rgba(215, 25, 39, 0.012);
+
+  letter-spacing: -10px;
+
+  pointer-events: none;
+
+  white-space: nowrap;
+}
+
+.clan-uzumaki::before {
+  content: "UZUMAKI";
+
+  position: absolute;
+
+  right: -1rem;
+  top: 5rem;
+
+  font-family: var(--font-display);
+
+  font-size: clamp(5rem, 16vw, 13rem);
+
+  font-weight: 900;
+
+  color: rgba(237, 108, 22, 0.012);
+
+  letter-spacing: -10px;
+
+  pointer-events: none;
+
+  white-space: nowrap;
+}
+
+.clan-uzumaki .section-intro::before {
+  background:
+    linear-gradient(
+      90deg,
+      var(--orange),
+      transparent
+    );
+}
+
+/* =========================================================
+   CHARACTER STAGE
+   ========================================================= */
+
+.character-stage {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  grid-auto-rows: 350px;
+
+  gap: 10px;
+}
+
+/* =========================================================
+   CHARACTER CARD
+   ========================================================= */
+
+.character-feature {
+  position: relative;
+
+  overflow: hidden;
+
+  background: var(--panel);
+
+  border: 1px solid var(--line);
+
+  cursor: pointer;
+
+  isolation: isolate;
+
+  transition:
+    transform 0.45s var(--ease),
+    border-color 0.3s ease,
+    box-shadow 0.45s var(--ease);
+
+  clip-path:
+    polygon(
+      0 0,
+      calc(100% - 12px) 0,
+      100% 12px,
+      100% 100%,
+      0 100%
+    );
+}
+
+.character-feature.feature-large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.character-feature::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  right: 0;
+
+  width: 55px;
+  height: 55px;
+
+  z-index: 6;
+
+  border-top:
+    1px solid rgba(255, 255, 255, 0.13);
+
+  border-right:
+    1px solid rgba(255, 255, 255, 0.13);
+
+  opacity: 0.4;
+
+  pointer-events: none;
+}
+
+.character-feature::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: 1px;
+
+  z-index: 7;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--red),
+      transparent
+    );
+
+  transform: scaleX(0);
+
+  transition:
+    transform 0.5s var(--ease);
+}
+
+.character-feature:hover {
+  transform: translateY(-5px);
+
+  border-color: var(--line-red);
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.6),
+    0 0 22px rgba(215, 25, 39, 0.045);
+}
+
+.character-feature:hover::after {
+  transform: scaleX(1);
+}
+
+.character-feature:hover::before {
+  border-color: var(--red);
+  opacity: 0.75;
+}
+
+.clan-uzumaki .character-feature:hover {
+  border-color: var(--line-orange);
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.6),
+    0 0 22px rgba(237, 108, 22, 0.04);
+}
+
+.clan-uzumaki .character-feature::after {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--orange),
+      transparent
+    );
+}
+
+/* =========================================================
+   CHARACTER IMAGE
+   ========================================================= */
+
+.character-image {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background-size: cover;
+  background-position: center;
+
+  filter:
+    saturate(0.94)
+    brightness(0.98)
+    contrast(1.03);
+
+  transform: scale(1.01);
+
+  transition:
+    transform 0.75s var(--ease),
+    filter 0.5s ease;
+}
+
+.character-feature:hover .character-image {
+  transform: scale(1.045);
+
+  filter:
+    saturate(1.04)
+    brightness(1.02)
+    contrast(1.02);
+}
+
+.character-feature.feature-large
+.character-image::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 4, 5, 0.3),
+      transparent 65%
+    );
+
+  opacity: 0.5;
+}
+
+/* =========================================================
+   CHARACTER SHADE
+   ========================================================= */
+
+.character-shade {
+  position: absolute;
+  inset: 0;
+
+  z-index: 1;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(2, 3, 4, 0.84) 0%,
+      rgba(2, 3, 4, 0.42) 27%,
+      rgba(2, 3, 4, 0.04) 65%,
+      transparent 100%
+    );
+}
+
+/* =========================================================
+   CHARACTER NUMBER
+   ========================================================= */
+
+.character-number {
+  position: absolute;
+
+  top: 0.95rem;
+  right: 0.95rem;
+
+  z-index: 5;
+
+  font-family: var(--font-display);
+
+  font-size: 0.9rem;
+
+  font-weight: 900;
+
+  color: rgba(255, 255, 255, 0.55);
+
+  letter-spacing: 1px;
+}
+
+.character-number::before {
+  content: "FILE";
+
+  margin-right: 0.4rem;
+
+  font-size: 0.38rem;
+
+  color: var(--dim);
+
+  letter-spacing: 1.8px;
+}
+
+/* =========================================================
+   CHARACTER INFO
+   ========================================================= */
+
+.character-info {
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+
+  padding: 1.35rem;
+
+  z-index: 5;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.4rem;
+}
+
+.character-clan {
+  font-family: var(--font-display);
+
+  font-size: 0.47rem;
+
+  font-weight: 700;
+
+  letter-spacing: 1.8px;
+
+  color: var(--red);
+
+  text-transform: uppercase;
+}
+
+.clan-uzumaki .character-clan {
+  color: var(--orange);
+}
+
+.character-info h3 {
+  font-family: var(--font-display);
+
+  font-size: 1.4rem;
+
+  font-weight: 900;
+
+  line-height: 1;
+
+  letter-spacing: 0.4px;
+
+  color: var(--white);
+
+  text-transform: uppercase;
+}
+
+.character-feature:not(.feature-large)
+.character-info h3 {
+  font-size: 1rem;
+}
+
+.character-info p {
+  max-width: 500px;
+
+  color: rgba(255, 255, 255, 0.58);
+
+  font-size: 0.7rem;
+
+  line-height: 1.55;
+
+  display: -webkit-box;
+
+  -webkit-line-clamp: 2;
+
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   CHARACTER IMAGES
+   ========================================================= */
+
+.char-itachi { background-image: url("char-itachi.jpg"); }
+.char-madara { background-image: url("char-madara.jpg"); }
+.char-sasuke { background-image: url("char-sasuke.jpg"); }
+.char-obito { background-image: url("char-obito.jpg"); }
+.char-shisui { background-image: url("char-shisui.jpg"); }
+.char-naruto { background-image: url("char-naruto.jpg"); }
+.char-kushina { background-image: url("char-kushina.jpg"); }
+.char-nagato { background-image: url("char-nagato.jpg"); }
+.char-minato { background-image: url("char-minato.jpg"); }
+.char-boruto { background-image: url("char-boruto.jpg"); }
+.char-fugaku { background-image: url("char-fugaku.jpg"); }
+.char-izuna { background-image: url("char-izuna.jpg"); }
+.char-sarada { background-image: url("char-sarada.jpg"); }
+.char-kagami { background-image: url("char-kagami.jpg"); }
+.char-karin { background-image: url("char-karin.jpg"); }
+.char-ashina { background-image: url("char-ashina.jpg"); }
+.char-himawari { background-image: url("char-himawari.jpg"); }
+.char-hashirama { background-image: url("char-hashirama.jpg"); }
+.char-tobirama { background-image: url("char-tobirama.jpg"); }
+.char-tsunade { background-image: url("char-tsunade.jpg"); }
+.char-butsuma { background-image: url("char-butsuma.jpg"); }
+.char-hinata { background-image: url("char-hinata.jpg"); }
+.char-neji { background-image: url("char-neji.jpg"); }
+.char-hiashi { background-image: url("char-hiashi.jpg"); }
+.char-hanabi { background-image: url("char-hanabi.jpg"); }
+.char-shikamaru { background-image: url("char-shikamaru.jpg"); }
+.char-shikaku { background-image: url("char-shikaku.jpg"); }
+.char-yoshino { background-image: url("char-yoshino.jpg"); }
+
+
+/* =========================================================
+   JUTSU GRID
+   ========================================================= */
+
+.jutsu-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+/* =========================================================
+   JUTSU CARD
+   ========================================================= */
+
+.jutsu-card {
+  position: relative;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 18, 21, 0.9),
+      rgba(6, 8, 10, 0.94)
+    );
+
+  border: 1px solid var(--line);
+
+  display: flex;
+
+  flex-direction: column;
+
+  transition:
+    transform 0.4s var(--ease),
+    border-color 0.3s ease,
+    box-shadow 0.4s var(--ease);
+
+  clip-path:
+    polygon(
+      0 0,
+      calc(100% - 10px) 0,
+      100% 10px,
+      100% 100%,
+      0 100%
+    );
+}
+
+.jutsu-card::before {
+  content: "TECHNIQUE";
+
+  position: absolute;
+
+  top: 0.7rem;
+  left: 0.7rem;
+
+  z-index: 5;
+
+  padding: 0.28rem 0.4rem;
+
+  color: rgba(255, 255, 255, 0.38);
+
+  background: rgba(0, 0, 0, 0.4);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  font-family: var(--font-display);
+
+  font-size: 0.38rem;
+
+  letter-spacing: 1.4px;
+}
+
+.jutsu-card::after {
+  content: "";
+
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+
+  width: 0;
+  height: 1px;
+
+  background: var(--red);
+
+  transition:
+    width 0.45s var(--ease);
+
+  z-index: 10;
+}
+
+.jutsu-card:hover {
+  transform: translateY(-5px);
+
+  border-color: var(--line-red);
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.55),
+    0 0 20px rgba(215, 25, 39, 0.035);
+}
+
+.jutsu-card:hover::after {
+  width: 100%;
+}
+
+.jutsu-uz-1,
+.jutsu-uz-2,
+.jutsu-uz-3,
+.jutsu-uz-4 {
+  --jutsu-accent: var(--orange);
+}
+
+.jutsu-uz-1::after,
+.jutsu-uz-2::after,
+.jutsu-uz-3::after,
+.jutsu-uz-4::after {
+  background: var(--orange);
+}
+
+.jutsu-uz-1:hover,
+.jutsu-uz-2:hover,
+.jutsu-uz-3:hover,
+.jutsu-uz-4:hover {
+  border-color: var(--line-orange);
+}
+
+/* =========================================================
+   JUTSU IMAGE
+   ========================================================= */
+
+.jutsu-image {
+  position: relative;
+
+  height: 225px;
+
+  background-size: cover;
+
+  background-position: center;
+
+  filter:
+    saturate(0.94)
+    brightness(0.98)
+    contrast(1.03);
+
+  transition:
+    transform 0.7s var(--ease),
+    filter 0.4s ease;
+}
+
+.jutsu-image::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 40%,
+      rgba(3, 4, 5, 0.68) 100%
+    );
+}
+
+.jutsu-card:hover .jutsu-image {
+  transform: scale(1.04);
+
+  filter:
+    saturate(1.04)
+    brightness(1.02)
+    contrast(1.02);
+}
+
+/* =========================================================
+   JUTSU IMAGES
+   ========================================================= */
+
+.jutsu-1 .jutsu-image { background-image: url("jutsu-1.jpg"); }
+.jutsu-2 .jutsu-image { background-image: url("jutsu-2.jpg"); }
+.jutsu-3 .jutsu-image { background-image: url("jutsu-3.jpg"); }
+.jutsu-4 .jutsu-image { background-image: url("jutsu-4.jpg"); }
+.jutsu-uz-1 .jutsu-image { background-image: url("jutsu-uz-1.jpg"); }
+.jutsu-uz-2 .jutsu-image { background-image: url("jutsu-uz-2.jpg"); }
+.jutsu-uz-3 .jutsu-image { background-image: url("jutsu-uz-3.jpg"); }
+.jutsu-uz-4 .jutsu-image { background-image: url("jutsu-uz-4.jpg"); }
+
+/* =========================================================
+   JUTSU CONTENT
+   ========================================================= */
+
+.jutsu-content {
+  position: relative;
+
+  padding: 1.1rem 1.2rem 1.3rem;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.5rem;
+
+  flex: 1;
+}
+
+.jutsu-tag {
+  font-family: var(--font-display);
+
+  font-size: 0.45rem;
+
+  font-weight: 700;
+
+  letter-spacing: 1.8px;
+
+  color: var(--red);
+
+  text-transform: uppercase;
+}
+
+.jutsu-uz-1 .jutsu-tag,
+.jutsu-uz-2 .jutsu-tag,
+.jutsu-uz-3 .jutsu-tag,
+.jutsu-uz-4 .jutsu-tag {
+  color: var(--orange);
+}
+
+.jutsu-content h3 {
+  font-family: var(--font-display);
+
+  font-size: 0.95rem;
+
+  font-weight: 900;
+
+  line-height: 1.2;
+
+  letter-spacing: 0.2px;
+
+  color: var(--white);
+
+  text-transform: uppercase;
+}
+
+.jutsu-content p {
+  color: var(--muted);
+
+  font-size: 0.7rem;
+
+  line-height: 1.6;
+
+  display: -webkit-box;
+
+  -webkit-line-clamp: 3;
+
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+}
